@@ -1,0 +1,11 @@
+"handler":
+  "request_body_limit": 1048576
+
+"postgres_config":
+  "url": "localhost:5432"
+  "max_connections": 10
+  "database": "postgres"
+
+"redis_config":
+  "port": 6379
+  "host": "localhost"
