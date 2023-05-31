@@ -23,7 +23,7 @@ This can be changed if needed by modifying `config/base.yaml`
     go run main.go
 Accepts request on the following endpoints on http://localhost:8080
 * [/redis/incr](#increment-endpoint) allows to store and increment value stored under the provided key in redis.
-* [/postgres/users](#add-user-endpoint) allows to add a row in the `postgres` database under `public` schema. Schema is hardcoded but it's really easy to migrate to config if needed. Database can be modified in `config/base.yaml`
+* [/postgres/users](#add-user-endpoint) allows to add a row in the `postgres` database under `public` schema. Both schema and database can be configured in the `config/base.yaml`. Schema is set under `postgres_repo_config` while database is set under `postgres_config`.
 * [/sign/hmacsha512](#signature-endpoint) allows to sign the provided text with the key using SHA512 algorythm and receive a hex signature.
 
 ### increment endpoint

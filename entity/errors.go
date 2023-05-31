@@ -3,8 +3,10 @@ package entity
 const (
 	// MethodNotAllowed is a format string for the errors related to the respective http status
 	MethodNotAllowed = "method %s not allowed"
-	// UnableToReadTheBody is a format string for the errors when we are unable to read the request body
+	// UnableToReadTheBody is a string for the errors when we are unable to read the request body
 	UnableToReadTheBody = "unable to read the body"
+	// RequestBodyIsTooBig is a string for the errors when the request body is too big
+	RequestBodyIsTooBig = "request body is too big"
 	// BadRequest is a format string for the errors request is malformed
 	BadRequest = "bad request, err: %s"
 	// FailedToProcessTheRequest is a format string for the errors when the request processing failed

@@ -221,7 +221,7 @@ func (h *handler) AddUser(w http.ResponseWriter, req *http.Request) {
 			fmt.Sprintf(entity.BadRequest, "request body is too big"),
 			http.StatusBadRequest,
 		)
-		logger.Error(entity.UnableToReadTheBody)
+		logger.Error(entity.RequestBodyIsTooBig)
 		return
 	}
 	data, err := io.ReadAll(io.LimitReader(req.Body, h.config.RequestBodyLimit))
