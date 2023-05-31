@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
+	"go.uber.org/config"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
+	internalconfig "redis-postgres-service/config"
 	"redis-postgres-service/entity"
 	"redis-postgres-service/repository/postgres/pgfx"
 )
 
+const _configKey = "postgres_repo_config"
+
 const (
-	_createUsersTableQuery = `CREATE TABLE IF NOT EXISTS public.users 
+	_createUsersTableQuery = `CREATE TABLE IF NOT EXISTS %s.users 
 					(
 					    id SERIAL PRIMARY KEY,
     			   		name TEXT,  
     			   		age INT
 					);`
-	_insertUserQuery = `INSERT INTO public.users(name, age) VALUES ($1, $2) RETURNING id`
+	_insertUserQuery = `INSERT INTO %s.users(name, age) VALUES ($1, $2) RETURNING id`
 )
 
 type Repository interface {
@@ -32,14 +36,21 @@ var _ Repository = (*repository)(nil)
 type Params struct {
 	fx.In
 
-	Postgres pgfx.Postgres
-	Logger   *zap.Logger
+	Postgres       pgfx.Postgres
+	Logger         *zap.Logger
+	ConfigProvider config.Provider
 }
 
 // New is a constructor provided to the fx for creating a Repository
 func New(p Params) (Repository, error) {
+	var cfg internalconfig.PostgresRepoConfig
+	err := p.ConfigProvider.Get(_configKey).Populate(&cfg)
+	if err != nil {
+		return nil, errors.Errorf("failed to populate config: %s", err) // unreachable in tests, cause provider is populating from valid yaml.
+	}
 
-	tag, err := p.Postgres.Exec(context.Background(), _createUsersTableQuery)
+	query := fmt.Sprintf(_createUsersTableQuery, cfg.Schema)
+	tag, err := p.Postgres.Exec(context.Background(), query)
 	if err != nil {
 		return nil, errors.Errorf("failed to create a user table: %s", err)
 	}
@@ -48,12 +59,14 @@ func New(p Params) (Repository, error) {
 	return &repository{
 		logger:         p.Logger,
 		postgresClient: p.Postgres,
+		config:         &cfg,
 	}, nil
 }
 
 type repository struct {
 	logger         *zap.Logger
 	postgresClient pgfx.Postgres
+	config         *internalconfig.PostgresRepoConfig
 }
 
 // AddUser writes a row to the 'users' table and returns the number of row where data landed.
@@ -74,10 +87,11 @@ func (r *repository) AddUser(ctx context.Context, request *entity.AddUserRequest
 		}
 		tx.Commit(ctx)
 	}()
+	query := fmt.Sprintf(_insertUserQuery, r.config.Schema)
 	var id int64
 	if err = tx.QueryRow(
 		ctx,
-		_insertUserQuery,
+		query,
 		request.Name,
 		request.Age,
 	).

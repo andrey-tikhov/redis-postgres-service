@@ -37,12 +37,12 @@ type Postgres interface {
 }
 
 func New(p Params) (Postgres, error) {
-	var cfg internalconfig.PostgresConfig
+	var cfg internalconfig.PgfxConfig
 	err := p.ConfigProvider.Get(_configKey).Populate(&cfg)
 	if err != nil {
 		return nil, errors.Errorf("failed to populate config: %s", err) // unreachable in tests, cause provider is populating from valid yaml.
 	}
-	var secrets internalconfig.PostgresSecrets
+	var secrets internalconfig.PgfxSecrets
 	err = p.ConfigProvider.Get(_secretsKey).Populate(&secrets)
 	if err != nil {
 		return nil, errors.Errorf("failed to populate secrets: %s", err) // unreachable in tests, cause provider is populating from valid yaml.

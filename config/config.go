@@ -14,27 +14,37 @@ func New() (config.Provider, error) {
 	return provider, nil
 }
 
+// HandlerConfig is a container for the handler configuration
 type HandlerConfig struct {
 	RequestBodyLimit int64 `yaml:"request_body_limit"`
 }
 
-type PostgresConfig struct {
+// PgfxConfig is a container for the Postgres interface configuration (implemented by pgxpool.Pool)
+type PgfxConfig struct {
 	URL            string `yaml:"url"`
-	MaxConnections int    `yaml:"max_connections"`
 	Database       string `yaml:"database"`
+	MaxConnections int    `yaml:"max_connections"`
 }
 
-type PostgresSecrets struct {
+// PgfxSecrets is a container for the Postgres interface secrets
+type PgfxSecrets struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 }
 
+// PostgresRepoConfig is a container for the postgres repository configuration
+type PostgresRepoConfig struct {
+	Schema string `yaml:"schema"`
+}
+
+// RedisConfig is a container for redis repository configuration
 type RedisConfig struct {
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
 	Database int    `yaml:"database"`
 }
 
+// RedisSecrets is a container for redis repository secrets
 type RedisSecrets struct {
 	Password string `yaml:"password"`
 }

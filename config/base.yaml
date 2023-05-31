@@ -6,6 +6,9 @@
   "max_connections": 10
   "database": "postgres"
 
+"postgres_repo_config":
+  "schema": "public"
+
 "redis_config":
   "port": 6379
   "host": "localhost"
